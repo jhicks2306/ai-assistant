@@ -1,0 +1,28 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+langchain = "*"
+gpt4all = "*"
+llama-index = "*"
+llama-index-embeddings-langchain = "*"
+llama-index-llms-langchain = "*"
+sentence-transformers = "*"
+ipykernel = "*"
+pandas = "*"
+pydantic = "*"
+openai = "*"
+llama-index-program-openai = "*"
+pyaudio = "*"
+gtts = "*"
+speechrecognition = "*"
+spacy = "*"
+faiss-cpu = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"
+python_full_version = "3.11.7"
