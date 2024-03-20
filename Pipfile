@@ -20,6 +20,12 @@ gtts = "*"
 speechrecognition = "*"
 spacy = "*"
 faiss-cpu = "*"
+transformers = "*"
+ipywidgets = "*"
+pydub = "*"
+pygame = "*"
+boto3 = "*"
+langchain-community = "*"
 
 [dev-packages]
 

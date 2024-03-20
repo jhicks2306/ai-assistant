@@ -1,4 +1,7 @@
 .gitignore/
-llama-cache/
 *.txt
 models/
+__pycache__
+archive/
+cache/
+todos.md
