@@ -1,7 +1,8 @@
-.gitignore/
-*.txt
-models/
 __pycache__
+.gitignore/
 archive/
-cache/
+vector_db/
+*.txt
+*.gguf
+prototype*
 todos.md

@@ -26,6 +26,8 @@ pydub = "*"
 pygame = "*"
 boto3 = "*"
 langchain-community = "*"
+chromadb = "*"
+rich = "*"
 
 [dev-packages]
 
