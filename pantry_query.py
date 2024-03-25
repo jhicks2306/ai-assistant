@@ -2,7 +2,8 @@ from pathlib import Path
 from langchain_community.llms import Ollama
 from langchain.prompts import PromptTemplate
 from langchain_community.vectorstores import Chroma
-from langchain.schema.runnable import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
+from langchain.schema.runnable import RunnablePassthrough, RunnableParallel
 from project_config import ProjectConfig
 
 # Set filepaths and config variables.
@@ -34,11 +35,14 @@ def get_pantry_query_chain():
 
     retriever = loaded_vector_db.as_retriever(search_kwargs={"k": 1}) # TODO change k when db gets bigger.
 
+    setup_and_retrieval = RunnableParallel({"context": retriever, "question": RunnablePassthrough()})
+
     # Create basic chain that uses retreived context in the prompt.
     chain = (
-        {"context": retriever, "question": RunnablePassthrough()}
+        setup_and_retrieval
         | prompt
         | model
+        | StrOutputParser()
     )
 
     return chain
