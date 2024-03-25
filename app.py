@@ -2,13 +2,11 @@ import streamlit as st
 from langchain_community.chat_models import ChatOllama
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
+from load_data import create_vector_db
 from pantry_query import get_pantry_query_chain
 
 if "model" not in st.session_state:
     st.session_state["model"] = 'llama2'
-
-# llm = ChatOllama(model="llama2")
-# prompt = ChatPromptTemplate.from_template("Tell me a short joke about {topic}")
 
 chain = get_pantry_query_chain()
 
@@ -16,7 +14,7 @@ chain = get_pantry_query_chain()
 def response_generator(prompt):
     return chain.stream(prompt)
 
-st.title("Echo Bot")
+st.title("Pantry Bot")
 
 # Initialize chat history
 if "messages" not in st.session_state:
