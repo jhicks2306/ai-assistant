@@ -1,5 +1,5 @@
 from pathlib import Path
-from langchain_community.llms import GPT4All
+from langchain_community.llms import Ollama
 from langchain.prompts import PromptTemplate
 from langchain_community.vectorstores import Chroma
 from langchain.schema.runnable import RunnablePassthrough
@@ -14,7 +14,7 @@ EMBEDDER = ProjectConfig.EMBEDDER
 
 def get_pantry_query_chain():
     # Fetch llm
-    model = GPT4All(model=str(Path(MODELS_DIR / 'mistral-7b-openorca.gguf2.Q4_0.gguf')))
+    model = Ollama(model="llama2")
 
     # Create prompt to govern nature of llm responses.
     template_str = """Your job is to answer questions about what food ingredients are in the pantry, using the information provided below. Don't make up any information that's not provided. If you don't know an answer, say you don't know.

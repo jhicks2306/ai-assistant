@@ -1,6 +1,5 @@
 from pathlib import Path
 from langchain_community.vectorstores import Chroma
-from langchain_community.embeddings.gpt4all import GPT4AllEmbeddings
 from langchain_community.document_loaders.text import TextLoader
 from project_config import ProjectConfig
 
