@@ -24,10 +24,10 @@ transformers = "*"
 ipywidgets = "*"
 pydub = "*"
 pygame = "*"
-boto3 = "*"
 langchain-community = "*"
 chromadb = "*"
 rich = "*"
+ollama = "*"
 
 [dev-packages]
 
