@@ -28,6 +28,8 @@ langchain-community = "*"
 chromadb = "*"
 rich = "*"
 ollama = "*"
+streamlit = "*"
+langsmith = "*"
 
 [dev-packages]
 

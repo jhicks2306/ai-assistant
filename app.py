@@ -1,40 +1,57 @@
 import streamlit as st
+from langchain_community.llms import Ollama
 from langchain_community.chat_models import ChatOllama
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 from load_data import create_vector_db
 from pantry_query import get_pantry_query_chain
 
-if "model" not in st.session_state:
-    st.session_state["model"] = 'llama2'
+# Set up message history
+msgs = StreamlitChatMessageHistory(key="langchain_messages")
+if len(msgs.messages) == 0:
+    msgs.add_ai_message("How can I help you?")
 
-chain = get_pantry_query_chain()
+view_messages = st.expander("View the message contents in session state.")
 
-# Streamed response emulator
+# Set up LangChain and pass message history.
+model = Ollama(model='llama2')
+
+prompt = ChatPromptTemplate.from_messages( 
+    [
+        ("system", "You are a helpful assistant."),
+        MessagesPlaceholder(variable_name="history"),
+        ("human", "{question}")
+    ]
+)
+
+chain = prompt | model
+chain_with_history = RunnableWithMessageHistory(
+    chain,
+    lambda session_id: msgs,
+    input_messages_key="question",
+    history_messages_key="history"
+)
+
+# chain = get_pantry_query_chain()
+
 def response_generator(prompt):
-    return chain.stream(prompt)
+    # Funcion to invoke chain as a stream.
+    config = {"configurable": {"session_id": "any"}}
+    return chain_with_history.stream({"question": prompt}, config)
 
-st.title("Pantry Bot")
+st.title("Pantry Assistant")
 
-# Initialize chat history
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-# Display chat mesages from history on app rerun.
-for message in st.session_state.messages:
-    with st.chat_message(message['role']):
-        st.markdown(message['content'])
+# Render the chat history.
+for msg in msgs.messages:
+    st.chat_message(msg.type).write(msg.content)
 
 # React to user input
 if prompt := st.chat_input("What is up?"):
-    # Display user message in chat message container.
-    with st.chat_message("user"):
-        st.markdown(prompt)
-    # Add user message to chat history.
-    st.session_state.messages.append({'role': 'user', 'content': prompt})
-
-    with st.chat_message("assistant"):
-        response = st.write_stream(response_generator(prompt))
-
-    # Add assistant response to chat history.
-    st.session_state.messages.append({'role': 'assistant', 'content': response})
+    # Display user input (saved automatically in chat history)
+    st.chat_message("user").write(prompt)
+    # Invoke chain for response.
+    response_stream = response_generator(prompt)
+    # Write AI response.
+    st.chat_message("assistant").write_stream(response_stream)
