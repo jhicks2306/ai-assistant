@@ -30,6 +30,9 @@ rich = "*"
 ollama = "*"
 streamlit = "*"
 langsmith = "*"
+langchain-experimental = "*"
+pyowm = "*"
+grandalf = "*"
 
 [dev-packages]
 
