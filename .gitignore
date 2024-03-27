@@ -5,4 +5,5 @@ vector_db/
 *.txt
 *.gguf
 prototype*
+pantry.db
 todos.md
