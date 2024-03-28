@@ -6,7 +6,6 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 from utils.load_data import create_vector_db
-from pantry_query import get_pantry_query_chain
 
 # Set up message history
 msgs = StreamlitChatMessageHistory(key="langchain_messages")
