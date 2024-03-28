@@ -4,6 +4,7 @@ An AI assistant that helps manage a kitchen pantry.
 
 This project is work in progress. So far I have created a basic interface and connected an LLM which is run locally using `Ollama`. See below.
 
+[app · Streamlit.webm](https://github.com/jhicks2306/ai-assistant/assets/45722942/cf3a356b-e26e-44a0-9c91-9c90110d7539)
 
 
 
