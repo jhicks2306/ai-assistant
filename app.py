@@ -5,7 +5,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
-from load_data import create_vector_db
+from utils.load_data import create_vector_db
 from pantry_query import get_pantry_query_chain
 
 # Set up message history
@@ -20,7 +20,7 @@ model = Ollama(model='llama2')
 
 prompt = ChatPromptTemplate.from_messages( 
     [
-        ("system", "You are a helpful assistant."),
+        ("system", "You are a helpful assistant called PantryPal."),
         MessagesPlaceholder(variable_name="history"),
         ("human", "{question}")
     ]
