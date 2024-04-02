@@ -26,10 +26,10 @@ This project is work in progress. So far I have created a basic interface and co
 - [x] Experiment with a speech2text module.
 - [x] Create chain that can use llm to query SQL database.
 - [x] Create a chain to extract ingredients from user input.
-- [ ] Experiment with function calling and Langchain agents for directing interaction.
+- [x] Experiment with function calling and Langchain agents for directing interaction.
 - [ ] Create second streamlit page to present pantry data.
-- [ ] Create a chain which adds ingredients to pantry.
-- [ ] Create a chain which removes ingredients from pantry.
+- [x] Create a chain which adds ingredients to pantry.
+- [x] Create a chain which removes ingredients from pantry.
 - [ ] Turn Ollama LLM into an Agent which dynamically select correct tool.
 - [ ] Add more...
 

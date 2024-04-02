@@ -62,10 +62,12 @@ def create_items(names, conn, cursor):
 
 def delete_items(names, conn, cursor):   
     not_found_items = []
+    deleted_items = []
 
     for name in names:
         name = name.lower()
         delete_item(name, conn, cursor)
+        deleted_items.append(name)
         if cursor.rowcount == 0:  # Check if any rows were affected by the delete operation
             not_found_items.append(name)
     
@@ -77,4 +79,4 @@ def delete_items(names, conn, cursor):
             msg = msg + "\n" + item
         return msg
     else:
-        return f"{names} have been deleted from the pantry."
+        return f'The following items have been removed from the pantry: {", ".join(deleted_items)}.'  
