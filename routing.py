@@ -62,6 +62,7 @@ def get_routing_chain():
 
 
 if __name__ == "__main__":
+    model = OllamaFunctions(model="mistral:instruct")
     print(model.invoke("Do I have hummus and apple?"))
 
 # print(model.invoke("I went to the supermarket and got five apples, 3 oranges, 2 bananas, a pint of milk, and pasta."))

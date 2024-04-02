@@ -33,6 +33,8 @@ langsmith = "*"
 langchain-experimental = "*"
 pyowm = "*"
 grandalf = "*"
+tavily-python = "*"
+pytest = "*"
 
 [dev-packages]
 
