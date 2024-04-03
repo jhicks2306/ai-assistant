@@ -16,7 +16,7 @@ from project_config import ProjectConfig
 DB_PATH = ProjectConfig.DB_PATH
 conn, cursor = po.connect_to_db(DB_PATH)
 
-# Set up message history
+# Set up message history and config (required when calling Chain with history.)
 msgs = StreamlitChatMessageHistory(key="langchain_messages")
 if len(msgs.messages) == 0:
     msgs.add_ai_message("How can I help you?")
@@ -44,15 +44,6 @@ prompt = ChatPromptTemplate.from_messages(
 chain = prompt | model
 chain_with_history = RunnableWithMessageHistory(
     chain,
-    lambda session_id: msgs,
-    input_messages_key="input",
-    history_messages_key="history"
-)
-
-# Passthrough for when the response does not go through an LLM.
-passthrough = RunnablePassthrough()
-passthrough_with_history = RunnableWithMessageHistory(
-    passthrough,
     lambda session_id: msgs,
     input_messages_key="input",
     history_messages_key="history"
@@ -100,6 +91,7 @@ if input := st.chat_input("What is up?"):
         msgs.add_ai_message(response)
         response = string_to_generator(response)
     elif fn_name == 'query_pantry':
+        # Call chat model.
         response = chain_with_history.stream({"input": input}, config)
 
     # Write AI assistant response and add to message history.
