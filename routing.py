@@ -41,7 +41,7 @@ def get_routing_chain():
         },
         {
             "name": "query_pantry",
-            "description": "Look up information about what is in the pantry (useful when the user asks questions about the pantry).",
+            "description": "Look up information about what is in the pantry (useful when the user asks questions about what to cook).",
             "parameters": {
                 "type": "object",
                 "properties": {

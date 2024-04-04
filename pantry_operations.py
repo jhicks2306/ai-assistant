@@ -1,4 +1,6 @@
 import sqlite3
+import csv
+import io
 
 def connect_to_db(db_path):
     conn = sqlite3.connect(str(db_path))
@@ -80,3 +82,28 @@ def delete_items(names, conn, cursor):
         return msg
     else:
         return f'The following items have been removed from the pantry: {", ".join(deleted_items)}.'  
+    
+def get_pantry_csv(conn, cursor):
+    """Returns list of items in stock in CSV format."""
+    # Execute a SELECT query to fetch all rows ingredients in stock.
+    cursor.execute("SELECT * FROM pantry WHERE in_stock == True")
+    rows = cursor.fetchall()
+    # Write the data to a CSV-formatted string
+    csv_output = io.StringIO()
+    writer = csv.writer(csv_output)
+
+    # Write header
+    writer.writerow(['ID', 'Name', 'In Stock'])
+
+    # Write rows
+    for row in rows:
+        converted_row = row[0], row[1], bool(row[2])
+        writer.writerow(converted_row)
+
+    # Get the CSV-formatted string
+    csv_string = csv_output.getvalue()
+
+    # Close the StringIO object
+    csv_output.close()
+
+    return csv_string
