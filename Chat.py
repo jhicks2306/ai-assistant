@@ -15,6 +15,8 @@ from sql_chain import get_query_chain
 from project_config import ProjectConfig
 from datetime import date, timedelta
 
+st.set_page_config(page_title="Chat", page_icon="📈")
+
 # Connect to pantry database
 DB_PATH = ProjectConfig.DB_PATH
 conn, cursor = po.connect_to_db(DB_PATH)
