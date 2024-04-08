@@ -7,6 +7,7 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 from utils.load_data import create_vector_db
+from utils.lemmatizer import lemmatize_sentence
 from routing import get_routing_chain
 import json
 import pantry_operations as po
@@ -26,10 +27,6 @@ config = {"configurable": {"session_id": "any"}}
 # Set up chain to route user messages to the correct response.
 router = get_routing_chain()
 
-# Placeholder function for querying with pantry.
-def query_pantry(ingredients):
-    return f'This is a pantry query?'
-
 # Set up main chat model chain and pass message history.
 model = Ollama(model='mistral:instruct')
 
@@ -45,9 +42,8 @@ prompt = ChatPromptTemplate.from_messages(
 )
 
 pantry = po.get_pantry_csv(conn, cursor)
+
 # Chain for when the response comes from the chat LLM.
-
-
 chain = prompt | model
 chain_with_history = RunnableWithMessageHistory(
     chain,
@@ -56,7 +52,7 @@ chain_with_history = RunnableWithMessageHistory(
     history_messages_key="history"
 )
 
-# Define utility function for streamed responses.
+# Define utility function for streaming responses.
 def string_to_generator(input_string):
     """Convert string to stream of words."""
     for char in input_string:
@@ -80,16 +76,21 @@ if input := st.chat_input("What is up?"):
     fn_name = route.additional_kwargs['function_call']['name']
     fn_args = json.loads(route.additional_kwargs['function_call']['arguments'])
 
+    # Lemmatize any ingredients mentioned
+    ingredients = fn_args['ingredients']
+    lemmatized_ingredients = [lemmatize_sentence(ingredient) for ingredient in ingredients]
+
+
     # Run appropriate chain to generate response.
     if fn_name == 'add_ingredients':
         # Take response from SQL operation, add messages to history, and convert to stream.
-        response = po.create_items(fn_args['ingredients'], conn=conn, cursor=cursor)
+        response = po.create_items(lemmatized_ingredients, conn=conn, cursor=cursor)
         msgs.add_user_message(input)
         msgs.add_ai_message(response)
         response = string_to_generator(response)
     elif fn_name == 'remove_ingredients':
         # Take response from SQL operation, add messages to history, and convert to stream.
-        response = po.delete_items(fn_args['ingredients'], conn=conn, cursor=cursor)
+        response = po.delete_items(lemmatized_ingredients, conn=conn, cursor=cursor)
         msgs.add_user_message(input)
         msgs.add_ai_message(response)
         response = string_to_generator(response)

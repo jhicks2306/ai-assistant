@@ -27,10 +27,13 @@ This project is work in progress. So far I have created a basic interface and co
 - [x] Create chain that can use llm to query SQL database.
 - [x] Create a chain to extract ingredients from user input.
 - [x] Experiment with function calling and Langchain agents for directing interaction.
-- [ ] Create second streamlit page to present pantry data.
 - [x] Create a chain which adds ingredients to pantry.
 - [x] Create a chain which removes ingredients from pantry.
-- [ ] Turn Ollama LLM into an Agent which dynamically select correct tool.
+- [ ] Use NLP to trim words into stem.
+- [ ] Setup RAG flow for general chat queries.
+- [ ] Potentially include RAG flow even when adding / removing ingredients.
+- [ ] Add key fields to pantry database schema.
+- [ ] Create second streamlit page to present pantry data.
 - [ ] Add more...
 
 ### Notes

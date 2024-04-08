@@ -18,7 +18,6 @@ llama-index-program-openai = "*"
 pyaudio = "*"
 gtts = "*"
 speechrecognition = "*"
-spacy = "*"
 faiss-cpu = "*"
 transformers = "*"
 ipywidgets = "*"
@@ -35,6 +34,7 @@ pyowm = "*"
 grandalf = "*"
 tavily-python = "*"
 pytest = "*"
+nltk = "*"
 
 [dev-packages]
 
