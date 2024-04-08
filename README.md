@@ -29,11 +29,11 @@ This project is work in progress. So far I have created a basic interface and co
 - [x] Experiment with function calling and Langchain agents for directing interaction.
 - [x] Create a chain which adds ingredients to pantry.
 - [x] Create a chain which removes ingredients from pantry.
-- [ ] Use NLP to trim words into stem.
-- [ ] Setup RAG flow for general chat queries.
-- [ ] Potentially include RAG flow even when adding / removing ingredients.
+- [x] Use NLP to lemmatize ingredients before adding to database.
+- [x] Setup RAG flow for general chat queries.
 - [ ] Add key fields to pantry database schema.
 - [ ] Create second streamlit page to present pantry data.
+- [ ] Potentially include RAG flow even when adding / removing ingredients.
 - [ ] Add more...
 
 ### Notes

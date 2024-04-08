@@ -8,7 +8,7 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 from utils.load_data import create_vector_db
 from utils.lemmatizer import lemmatize_sentence
-from routing import get_routing_chain
+from router import get_routing_chain
 import json
 import pantry_operations as po
 from sql_chain import get_query_chain

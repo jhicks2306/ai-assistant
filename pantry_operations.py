@@ -50,7 +50,7 @@ def create_items(names, conn, cursor):
     
     if not_added_items and added_items:
         return f'Following items were added to the pantry: {", ".join(added_items)}.\
-              These items were already in the pantry: {not_added_items}.'
+              These items were already in the pantry: {", ".join(not_added_items)}.'
     if not_added_items:
         return f'The following items are already logged in the pantry: {", ".join(not_added_items)}.'
     if added_items:
