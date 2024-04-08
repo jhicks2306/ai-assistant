@@ -35,6 +35,7 @@ grandalf = "*"
 tavily-python = "*"
 pytest = "*"
 nltk = "*"
+python-dotenv = "*"
 
 [dev-packages]
 

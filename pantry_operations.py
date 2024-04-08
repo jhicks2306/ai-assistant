@@ -1,14 +1,17 @@
 import sqlite3
 import csv
 import io
+from datetime import date, timedelta
+
+today = date.today()
 
 def connect_to_db(db_path):
     conn = sqlite3.connect(str(db_path))
     cursor = conn.cursor()
     return conn, cursor
     
-def create_item(name, in_stock, conn, cursor):
-    cursor.execute('INSERT INTO pantry (name, in_stock) VALUES (?, ?)', (name, in_stock))
+def create_item(name, conn, cursor, shelf_life=5):
+    cursor.execute('INSERT INTO pantry (name, date_added, days_shelf_life) VALUES (?, ?, ?)', (name, today, shelf_life))
     conn.commit()
 
 def read_items(conn, cursor):
@@ -16,12 +19,12 @@ def read_items(conn, cursor):
     items = cursor.fetchall()
     return items
 
-def update_item(name_old, name_new, in_stock, conn, cursor):
+def update_item(name_old, name_new, conn, cursor, shelf_life=5):
     item_id = get_item_id_by_name(name_old, conn, cursor)
     if item_id is None:
         print('There is no item in the pantry matching this name')
     else:
-        cursor.execute('UPDATE pantry SET name = ?, in_stock = ? WHERE id = ?', (name_new, in_stock, item_id))
+        cursor.execute('UPDATE pantry SET name = ?, date_added = ?, days_shelf_life = ? WHERE id = ?', (name_new, today, shelf_life, item_id))
         conn.commit()
 
 def delete_item(name, conn, cursor):
@@ -43,7 +46,7 @@ def create_items(names, conn, cursor):
     in_stock = True
     for name in names:
         try:
-            create_item(name, in_stock, conn, cursor)
+            create_item(name, conn, cursor, shelf_life=5)
             added_items.append(name)
         except sqlite3.IntegrityError:
             not_added_items.append(name)
@@ -79,20 +82,19 @@ def delete_items(names, conn, cursor):
     
 def get_pantry_csv(conn, cursor):
     """Returns list of items in stock in CSV format."""
-    # Execute a SELECT query to fetch all rows ingredients in stock.
-    cursor.execute("SELECT * FROM pantry WHERE in_stock == True")
+    # Execute a SELECT query to fetch all ingredients in stock.
+    cursor.execute("SELECT name FROM pantry")
     rows = cursor.fetchall()
     # Write the data to a CSV-formatted string
     csv_output = io.StringIO()
     writer = csv.writer(csv_output)
 
     # Write header
-    writer.writerow(['ID', 'Name', 'In Stock'])
+    writer.writerow(['Ingredient'])
 
     # Write rows
     for row in rows:
-        converted_row = row[0], row[1], bool(row[2])
-        writer.writerow(converted_row)
+        writer.writerow(row)
 
     # Get the CSV-formatted string
     csv_string = csv_output.getvalue()

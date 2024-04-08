@@ -27,7 +27,7 @@ def get_query_chain():
     template = """Based on the table schema below, write a SQL query that would answer the user's question:
     {sql_schema}
 
-    Question: {question}
+    Question: {input}
     SQL Query: """
 
     prompt = ChatPromptTemplate.from_messages(
@@ -51,7 +51,7 @@ def get_query_chain():
     template = """Based on the table schema below, question, sql query, and sql response, write a natural language response:
     {schema}
 
-    Question: {question}
+    Question: {input}
     SQL Query: {query}
     SQL Response: {response}"""
 
@@ -83,4 +83,4 @@ def get_query_chain():
 if __name__ == "__main__":
 
     chain = get_query_chain()
-    print(chain.invoke({'question':"What food items are in stock?"}))
+    print(chain.invoke({'input':"Are apples in stock?"}))

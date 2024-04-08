@@ -8,7 +8,7 @@ This project is work in progress. So far I have created a basic interface and co
 
 
 
-### Skills and technologies used so far.
+### Skills and technologies used.
 - `Ollama` used to run open source large language model locally.
 - `Streamlit` for main chat app and interface.
 - `Langchain` for building the flow of interaction with the llm.
@@ -16,24 +16,15 @@ This project is work in progress. So far I have created a basic interface and co
 - `speech-recognition` package for testing voice to speech.
 - `gTTs` for testing text to speech.
 
-### Todos
-- [x] Set up Ollama and get llm running locally.
-- [x] Create streamlit UI.
-- [x] Add chat history.
-- [x] Test formats for storing pantry data.
-- [x] Create a simple SQL database for kitchen pantry.
-- [x] Experiment with a text2speech module.
-- [x] Experiment with a speech2text module.
-- [x] Create chain that can use llm to query SQL database.
-- [x] Create a chain to extract ingredients from user input.
-- [x] Experiment with function calling and Langchain agents for directing interaction.
-- [x] Create a chain which adds ingredients to pantry.
-- [x] Create a chain which removes ingredients from pantry.
-- [x] Use NLP to lemmatize ingredients before adding to database.
-- [x] Setup RAG flow for general chat queries.
-- [ ] Add key fields to pantry database schema.
-- [ ] Create second streamlit page to present pantry data.
-- [ ] Potentially include RAG flow even when adding / removing ingredients.
+### Features
+- [x] Add/remove items to pantry via chat.
+- [x] Check whether an item is in the pantry via chat.
+- [x] Get recipe suggestions based on ingredients from the pantry.
+- [ ] View pantry in separate page.
+- [ ] Add/remove items to shopping list via chat.
+- [ ] View shopping list in separate page.
+- [ ] Add items using image recognition.
+- [ ] Manage interactions with voice.
 - [ ] Add more...
 
 ### Notes

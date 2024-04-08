@@ -13,6 +13,7 @@ import json
 import pantry_operations as po
 from sql_chain import get_query_chain
 from project_config import ProjectConfig
+from datetime import date, timedelta
 
 # Connect to pantry database
 DB_PATH = ProjectConfig.DB_PATH
@@ -32,10 +33,12 @@ model = Ollama(model='mistral:instruct')
 
 prompt = ChatPromptTemplate.from_messages( 
     [
-        ("system", "You are a helpful assistant called PantryPal. You are knowledgable about food ingedients, recipes and cooking. Respond to user queries with reference to the pantry that shows which food ingredients are in stock. Provide a natural language response. Be concise and do not make up any food ingredients that are not in the pantry. Start each response with PantryPal: "),
+        ("system", "You are a helpful assistant called PantryPal. You are knowledgable about food ingedients, recipes and cooking. Provide a natural language response and be concise. Start each response with PantryPal: "),
         MessagesPlaceholder(variable_name="history"),
         ("user", """
-        Pantry: {pantry}
+        Answer the following query with reference to the list of ingredients available in the pantry below. 
+         
+        Ingredients available in the pantry: {pantry}
         Query : {input}
         """)
     ]
@@ -94,7 +97,7 @@ if input := st.chat_input("What is up?"):
         msgs.add_user_message(input)
         msgs.add_ai_message(response)
         response = string_to_generator(response)
-    elif fn_name == 'query_pantry':
+    elif fn_name == 'query':
         # Call chat model.
         response = chain_with_history.stream({"input": input, "pantry": pantry}, config)
 
