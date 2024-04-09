@@ -10,8 +10,8 @@ def connect_to_db(db_path):
     cursor = conn.cursor()
     return conn, cursor
     
-def create_item(name, conn, cursor, shelf_life=5):
-    cursor.execute('INSERT INTO pantry (name, date_added, days_shelf_life) VALUES (?, ?, ?)', (name, today, shelf_life))
+def create_item(name, conn, cursor):
+    cursor.execute('INSERT INTO pantry (name, date_added) VALUES (?, ?)', (name, today))
     conn.commit()
 
 def read_items(conn, cursor):
@@ -19,12 +19,12 @@ def read_items(conn, cursor):
     items = cursor.fetchall()
     return items
 
-def update_item(name_old, name_new, conn, cursor, shelf_life=5):
+def update_item(name_old, name_new, conn, cursor):
     item_id = get_item_id_by_name(name_old, conn, cursor)
     if item_id is None:
         print('There is no item in the pantry matching this name')
     else:
-        cursor.execute('UPDATE pantry SET name = ?, date_added = ?, days_shelf_life = ? WHERE id = ?', (name_new, today, shelf_life, item_id))
+        cursor.execute('UPDATE pantry SET name = ?, date_added = ? WHERE id = ?', (name_new, today, item_id))
         conn.commit()
 
 def delete_item(name, conn, cursor):
@@ -46,7 +46,7 @@ def create_items(names, conn, cursor):
     in_stock = True
     for name in names:
         try:
-            create_item(name, conn, cursor, shelf_life=5)
+            create_item(name, conn, cursor)
             added_items.append(name)
         except sqlite3.IntegrityError:
             not_added_items.append(name)
