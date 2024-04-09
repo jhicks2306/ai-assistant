@@ -27,12 +27,13 @@ column_mapping = {
                 'id': 'id',
                 'name': 'Item',
                 'date_added': 'Date Added',
-                'days_shelf_life': 'Shelf life',
-                'use_by_date': 'Use By'
             }
+# Apply transformations for display purposes.
 pantry_df.set_index('id', inplace=True)
+pantry_df['name'] = pantry_df['name'].apply(lambda x: x.capitalize())
 pantry_df.rename(columns=column_mapping, inplace=True)
 
+### the Pantry page ###
 st.markdown("# Pantry 🥫")
 
 # Render DataFrame
