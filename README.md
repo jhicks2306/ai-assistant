@@ -4,6 +4,7 @@ An AI assistant that helps manage a kitchen pantry.
 
 This project is work in progress. So far, I have created a basic interface and connected an LLM which is run locally using `Ollama`. The LLM can answer queries with reference to the food items in the pantry. See below.
 
+[Chat.webm](https://github.com/jhicks2306/ai-assistant/assets/45722942/8153a2bc-643f-424e-b270-dbf6ec00651c)
 
 
 
