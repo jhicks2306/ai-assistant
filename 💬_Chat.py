@@ -14,8 +14,14 @@ import pantry_operations as po
 from sql_chain import get_query_chain
 from project_config import ProjectConfig
 from datetime import date, timedelta
+from dotenv import dotenv_values
+import os
 
-st.set_page_config(page_title="Chat", page_icon="📈")
+env_vars = dotenv_values(".env")
+os.environ["LANGCHAIN_API_KEY"] = env_vars['LANGCHAIN_API_KEY']
+os.environ["LANGCHAIN_TRACING_V2"] = "true"
+
+st.set_page_config(page_title="Chat", page_icon="💬")
 
 # Connect to pantry database
 DB_PATH = ProjectConfig.DB_PATH
