@@ -1,7 +1,8 @@
 import sqlite3
 import csv
 import io
-from datetime import date, timedelta
+from datetime import date
+from utils.lemmatizer import lemmatize_sentence
 
 class FoodList:
     def __init__(self, db_path, table):
@@ -11,6 +12,7 @@ class FoodList:
         self.table = table
     
     def create_item(self, name):
+        name = lemmatize_sentence(name)
         query = f'INSERT INTO {self.table} (name, date_added) VALUES (?, ?)'
         self.cursor.execute(query, (name, self.today))
         self.conn.commit()
@@ -22,6 +24,7 @@ class FoodList:
         return items
 
     def update_item(self, name_old, name_new):
+        name = lemmatize_sentence(name)
         item_id = self.get_item_id(name_old)
         if item_id is None:
             print('There is no item in the pantry matching this name')
@@ -31,6 +34,7 @@ class FoodList:
             self.conn.commit()
 
     def delete_item(self, name):
+        name = lemmatize_sentence(name)
         query = f'DELETE FROM {self.table} WHERE name = ?'
         self.cursor.execute(query, (name,))
         self.conn.commit()
@@ -110,7 +114,7 @@ class FoodList:
         return csv_string
     
     def to_string(self):
-        """Returns comma separated string of items in the pantry."""
+        """Returns comma separated string of items in the food list."""
         # Execute a SELECT query to fetch all ingredients in stock.
         query = f"SELECT name FROM {self.table}"
         self.cursor.execute(query)
