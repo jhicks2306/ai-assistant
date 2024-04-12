@@ -10,7 +10,7 @@ from utils.load_data import create_vector_db
 from utils.lemmatizer import lemmatize_sentence
 from router import get_routing_chain
 import json
-import pantry_operations as po
+from pantry import Pantry
 from sql_chain import get_query_chain
 from project_config import ProjectConfig
 from datetime import date, timedelta
@@ -25,7 +25,7 @@ st.set_page_config(page_title="Chat", page_icon="💬")
 
 # Connect to pantry database
 DB_PATH = ProjectConfig.DB_PATH
-conn, cursor = po.connect_to_db(DB_PATH)
+pantry = Pantry(DB_PATH)
 
 # Set up message history and config (required when calling Chain with history.)
 msgs = StreamlitChatMessageHistory(key="langchain_messages")
@@ -46,13 +46,13 @@ prompt = ChatPromptTemplate.from_messages(
         ("user", """
         Answer the following query with reference to the list of ingredients available in the pantry below. 
          
-        Ingredients available in the pantry: {pantry}
+        Ingredients available in the pantry: {pantry_items}
         Query : {input}
         """)
     ]
 )
 
-pantry = po.get_pantry_csv(conn, cursor)
+pantry_items = pantry.to_string()
 
 # Chain for when the response comes from the chat LLM.
 chain = prompt | model
@@ -91,17 +91,16 @@ if input := st.chat_input("What is up?"):
     ingredients = fn_args['ingredients']
     lemmatized_ingredients = [lemmatize_sentence(ingredient) for ingredient in ingredients]
 
-
     # Run appropriate chain to generate response.
     if fn_name == 'add_ingredients':
         # Take response from SQL operation, add messages to history, and convert to stream.
-        response = po.create_items(lemmatized_ingredients, conn=conn, cursor=cursor)
+        response = pantry.create_items(lemmatized_ingredients)
         msgs.add_user_message(input)
         msgs.add_ai_message(response)
         response = string_to_generator(response)
     elif fn_name == 'remove_ingredients':
         # Take response from SQL operation, add messages to history, and convert to stream.
-        response = po.delete_items(lemmatized_ingredients, conn=conn, cursor=cursor)
+        response = pantry.delete_items(lemmatized_ingredients)
         msgs.add_user_message(input)
         msgs.add_ai_message(response)
         response = string_to_generator(response)
@@ -112,5 +111,5 @@ if input := st.chat_input("What is up?"):
     # Write AI assistant response and add to message history.
     st.chat_message("assistant").write_stream(response)
 
-    cursor.close()
-    conn.close()
+    pantry.cursor.close()
+    pantry.conn.close()
