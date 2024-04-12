@@ -11,7 +11,7 @@ conn = sqlite3.connect(DB_PATH)
 
 # Execute SQL query to select all rows from the shopping list table
 cur = conn.cursor()
-cur.execute("SELECT * FROM pantry") # TODO: Create shopping list table.
+cur.execute("SELECT * FROM shopping_list")
 rows = cur.fetchall()
 
 # Get column names
@@ -35,9 +35,6 @@ shopping_df.rename(columns=column_mapping, inplace=True)
 
 ### the Shopping list page ###
 st.markdown("# Shopping list 📋")
-
-# SAMPLE SHOPPING LIST
-shopping_df = pd.DataFrame({'Item': ['Aubergine', 'Lentils', 'Ginger'], 'Purchased': [False, False, False]})
 
 # Render DataFrame
 edited_df = st.data_editor(shopping_df, use_container_width=True, hide_index=True)

@@ -10,7 +10,7 @@ from utils.load_data import create_vector_db
 from utils.lemmatizer import lemmatize_sentence
 from router import get_routing_chain
 import json
-from pantry import Pantry
+from food_list import FoodList
 from sql_chain import get_query_chain
 from project_config import ProjectConfig
 from datetime import date, timedelta
@@ -25,7 +25,7 @@ st.set_page_config(page_title="Chat", page_icon="💬")
 
 # Connect to pantry database
 DB_PATH = ProjectConfig.DB_PATH
-pantry = Pantry(DB_PATH)
+pantry = FoodList(DB_PATH, table='pantry')
 
 # Set up message history and config (required when calling Chain with history.)
 msgs = StreamlitChatMessageHistory(key="langchain_messages")

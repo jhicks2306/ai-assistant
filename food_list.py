@@ -3,18 +3,21 @@ import csv
 import io
 from datetime import date, timedelta
 
-class Pantry:
-    def __init__(self, db_path):
+class FoodList:
+    def __init__(self, db_path, table):
         self.today = date.today()
         self.conn = sqlite3.connect(str(db_path))
         self.cursor = self.conn.cursor()
+        self.table = table
     
     def create_item(self, name):
-        self.cursor.execute('INSERT INTO pantry (name, date_added) VALUES (?, ?)', (name, self.today))
+        query = f'INSERT INTO {self.table} (name, date_added) VALUES (?, ?)'
+        self.cursor.execute(query, (name, self.today))
         self.conn.commit()
 
     def read_items(self):
-        self.cursor.execute('SELECT * FROM pantry')
+        query = f'SELECT * FROM {self.table}'
+        self.cursor.execute(query)
         items = self.cursor.fetchall()
         return items
 
@@ -23,15 +26,18 @@ class Pantry:
         if item_id is None:
             print('There is no item in the pantry matching this name')
         else:
-            self.cursor.execute('UPDATE pantry SET name = ?, date_added = ? WHERE id = ?', (name_new, self.today, item_id))
+            query = f'UPDATE {self.table} SET name = ?, date_added = ? WHERE id = ?'
+            self.cursor.execute(query, (name_new, self.today, item_id))
             self.conn.commit()
 
     def delete_item(self, name):
-        self.cursor.execute('DELETE FROM pantry WHERE name = ?', (name,))
+        query = f'DELETE FROM {self.table} WHERE name = ?'
+        self.cursor.execute(query, (name,))
         self.conn.commit()
 
-    def get_item_id(self, name):  
-        self.cursor.execute('SELECT id FROM pantry WHERE name = ?', (name,))
+    def get_item_id(self, name):
+        query =  f'SELECT id FROM {self.table} WHERE name = ?'
+        self.cursor.execute(query, (name,))
         item = self.cursor.fetchone()
         
         if item:
@@ -57,7 +63,6 @@ class Pantry:
         if added_items:
             return f'The following items have been added to the pantry: {", ".join(added_items)}.'  
 
-
     def delete_items(self, names):   
         not_found_items = []
         deleted_items = []
@@ -80,9 +85,11 @@ class Pantry:
     
     def to_csv(self):
         """Returns string of items in stock in CSV format."""
-        # Execute a SELECT query to fetch all ingredients in stock.
-        self.cursor.execute("SELECT name FROM pantry")
+        # Execute a SELECT query to fetch all names in table.
+        query = f"SELECT name FROM {self.table}"
+        self.cursor.execute(query)
         rows = self.cursor.fetchall()
+
         # Write the data to a CSV-formatted string
         csv_output = io.StringIO()
         writer = csv.writer(csv_output)
@@ -105,7 +112,8 @@ class Pantry:
     def to_string(self):
         """Returns comma separated string of items in the pantry."""
         # Execute a SELECT query to fetch all ingredients in stock.
-        self.cursor.execute("SELECT name FROM pantry")
+        query = f"SELECT name FROM {self.table}"
+        self.cursor.execute(query)
 
         # Fetch all the rows and extract names
         names = [row[0] for row in self.cursor.fetchall()]
