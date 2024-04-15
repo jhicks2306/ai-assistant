@@ -10,6 +10,7 @@ class FoodList:
         self.conn = sqlite3.connect(str(db_path))
         self.cursor = self.conn.cursor()
         self.table = table
+        self.name = " ".join(self.table.split('_'))
     
     def create_item(self, name):
         name = lemmatize_sentence(name)
@@ -27,7 +28,7 @@ class FoodList:
         name = lemmatize_sentence(name)
         item_id = self.get_item_id(name_old)
         if item_id is None:
-            print('There is no item in the pantry matching this name')
+            print(f'There is no item in the {self.name} matching this name')
         else:
             query = f'UPDATE {self.table} SET name = ?, date_added = ? WHERE id = ?'
             self.cursor.execute(query, (name_new, self.today, item_id))
@@ -60,12 +61,12 @@ class FoodList:
                 not_added_items.append(name)
     
         if not_added_items and added_items:
-            return f'Following items were added to the pantry: {", ".join(added_items)}.\
-                These items were already in the pantry: {", ".join(not_added_items)}.'
+            return f'Following items were added to the {self.name}: {", ".join(added_items)}.\
+                These items were already in the {self.name}: {", ".join(not_added_items)}.'
         if not_added_items:
-            return f'The following items are already logged in the pantry: {", ".join(not_added_items)}.'
+            return f'The following items are already logged in the {self.name}: {", ".join(not_added_items)}.'
         if added_items:
-            return f'The following items have been added to the pantry: {", ".join(added_items)}.'  
+            return f'The following items have been added to the {self.name}: {", ".join(added_items)}.'  
 
     def delete_items(self, names):   
         not_found_items = []
@@ -80,12 +81,12 @@ class FoodList:
         self.conn.commit()
         
         if not_found_items:
-            msg = "The following items were not found in the database and couldn't be deleted:"
+            msg = f"The following items were not found in the {self.name} and couldn't be deleted:"
             for item in not_found_items:
                 msg = msg + "\n" + item
             return msg
         else:
-            return f'The following items have been removed from the pantry: {", ".join(deleted_items)}.'  
+            return f'The following items have been removed from the {self.name}: {", ".join(deleted_items)}.'  
     
     def to_csv(self):
         """Returns string of items in stock in CSV format."""
