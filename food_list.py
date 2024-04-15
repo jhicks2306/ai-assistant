@@ -5,10 +5,16 @@ from datetime import date
 from utils.lemmatizer import lemmatize_sentence
 
 class FoodList:
-    def __init__(self, db_path, table):
+    def __init__(self, db_path, table, conn=None, cursor=None):
         self.today = date.today()
-        self.conn = sqlite3.connect(str(db_path))
-        self.cursor = self.conn.cursor()
+        if conn is None:
+            self.conn = sqlite3.connect(str(db_path))
+        else:
+            self.conn = conn
+        if cursor is None:
+            self.cursor = self.conn.cursor()
+        else:
+            self.cursor = cursor
         self.table = table
         self.name = " ".join(self.table.split('_'))
     
@@ -25,7 +31,7 @@ class FoodList:
         return items
 
     def update_item(self, name_old, name_new):
-        name = lemmatize_sentence(name)
+        name = lemmatize_sentence(name_old)
         item_id = self.get_item_id(name_old)
         if item_id is None:
             print(f'There is no item in the {self.name} matching this name')
