@@ -11,3 +11,4 @@ todos.md
 static/
 zz-scratchpad.ipynb
 .vscode/
+.pytest_cache/

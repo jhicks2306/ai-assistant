@@ -2,7 +2,7 @@ import sqlite3
 import pytest
 
 # Import functions from the module
-from pantry_operations import connect_to_db, create_item, read_items, update_item, delete_item, create_items, delete_items
+from food_list import connect_to_db, create_item, read_items, update_item, delete_item, create_items, delete_items
 
 @pytest.fixture
 def temp_db():
