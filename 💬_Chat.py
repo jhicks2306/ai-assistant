@@ -60,8 +60,8 @@ def remove(ingredients: list, food_log: str) -> str:
         response = shopping_list.delete_items(ingredients)
     return response
 
-# Define tool 
-chat_prompt = ChatPromptTemplate.from_messages( 
+# Define tool for pantry queries
+pantry_prompt = ChatPromptTemplate.from_messages( 
     [
         ("system", "You are a helpful assistant called PantryPal. You are knowledgable about food ingedients, recipes and cooking. Provide a natural language response and be concise. Start each response with PantryPal: "),
         MessagesPlaceholder(variable_name="history"),
@@ -78,12 +78,26 @@ chat_prompt = ChatPromptTemplate.from_messages(
 pantry_items = pantry.to_string()
 
 # Chain for when the response is a general query about the pantry.
-chat_chain = chat_prompt | model
+chat_chain = pantry_prompt | model
 
 @tool
-def converse(input: str) -> str:
-    "Provide a general natural language response to the user input."
+def pantry_query(input: str) -> str:
+    "Answer a query that requires reference to the pantry."
     params = {"input": input, "pantry_items": pantry_items, "history": msgs.messages}
+    return chat_chain.invoke(params).content
+
+# Define tool for pantry queries
+chat_prompt = ChatPromptTemplate.from_messages( 
+    [
+        ("system", "You are a helpful assistant called PantryPal. You are knowledgable about food ingedients, recipes and cooking. Provide a natural language response and be concise. Start each response with PantryPal: "),
+        MessagesPlaceholder(variable_name="history"),
+        ("user", "{input}")
+    ]
+)
+@tool
+def converse(input: str) -> str:
+    "Provide a response with reference to an earlier message."
+    params = {"input": input,"history": msgs.messages}
     return chat_chain.invoke(params).content
 
 @tool
@@ -91,7 +105,7 @@ def strip(input: str) -> str:
     "Strip incorrect backslash and underscore from LLM response."
     return input.replace('\\_', '_')
 
-tools = [add, remove, converse]
+tools = [add, remove, pantry_query, converse]
 
 # Configure the system prompt for the chooser LLM.
 rendered_tools = render_text_description(tools)
@@ -148,3 +162,5 @@ if input := st.chat_input("What is up?"):
 
     pantry.cursor.close()
     pantry.conn.close()
+    shopping_list.cursor.close()
+    shopping_list.conn.close()

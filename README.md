@@ -21,8 +21,8 @@ This project is work in progress. So far, I have created a basic interface and c
 - [x] Add/remove items to pantry via chat.
 - [x] View pantry in separate page.
 - [x] Get recipe suggestions based on ingredients from the pantry.
-- [ ] Add/remove items to shopping list via chat.
-- [ ] View shopping list in separate page.
+- [x] Add/remove items to shopping list via chat.
+- [x] View shopping list in separate page.
 - [ ] Add items using image recognition.
 - [ ] Manage interactions with voice.
 - [ ] Add more...
