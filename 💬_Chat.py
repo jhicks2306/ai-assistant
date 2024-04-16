@@ -127,6 +127,7 @@ def tool_chain(model_output):
     chosen_tool = tool_map[model_output["name"]]
     return itemgetter("arguments") | chosen_tool
 
+# Define 'chooser' chain which will select course of action.
 parser = JsonOutputParser()
 fixing_parser = OutputFixingParser.from_llm(parser=parser, llm=model)
 chooser = prompt | model | StrOutputParser() | strip | fixing_parser
@@ -160,6 +161,7 @@ if input := st.chat_input("What is up?"):
     message = st.chat_message("assistant").write_stream(response_gen)
     msgs.add_ai_message(message)
 
+    
     pantry.cursor.close()
     pantry.conn.close()
     shopping_list.cursor.close()
