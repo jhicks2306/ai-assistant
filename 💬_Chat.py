@@ -117,7 +117,10 @@ def detected(ingredients: list) -> str:
     """Provide a list of food ingredients detected in user input.
     Arguments:
         ingredients: e.g. ['apples', 'pasta']"""
-    response = pantry.create_items(ingredients)
+    if ingredients == []:
+        response = "No food ingredients detected."
+    else:
+        response = pantry.create_items(ingredients)
     return response
 
 tools = [add, remove, pantry_query, converse]
@@ -134,6 +137,18 @@ DO NOT include double backslashes \\\ in your response."""
 
 prompt = ChatPromptTemplate.from_messages(
     [("system", system_prompt), ("user", "{input}")]
+)
+
+rendered_detect_tool = render_text_description([detected])
+detect_sys_prompt = f"""You are an assistant that has access to the following set of tools. Here are the names and descriptions for each tool:
+
+{rendered_detect_tool}
+
+Given the user input, return the name and input of the tool to use. Return your response as a JSON blob with 'name' and 'arguments' keys. The value associated with the 'arguments' key should be a dictionary of tool parameters.
+DO NOT include double backslashes \\\ in your response."""
+
+detect_prompt = ChatPromptTemplate.from_messages(
+    [("system", detect_sys_prompt), ("user", "{input}")]
 )
 
 # Define a function which returns the chosen tools as a runnable, based on user input.
@@ -162,20 +177,6 @@ def clean_string(input_string):
     
     return cleaned_string
 
-detect_model = Ollama(model='mistral:instruct')
-detect_sys_prompt = f"""You are an expert extraction algorithm. Extract food ingredients from the user input.
-return only a comma separated list of food ingredients.
-
-e.g. 'pasta, banana, rice'
-
-If there are no food ingredients in the user input, return just 'Empty'.
-"""
-
-detect_prompt = ChatPromptTemplate.from_messages(
-    [("system", detect_sys_prompt), ("user", """What food ingredients are in this list: {input}""")]
-)
-detection_chain = detect_prompt | detect_model
-
 ### The PANTRY ASSISTANT APP ###
 
 st.title("Pantry Assistant")
@@ -192,19 +193,12 @@ if img_file_buffer is not None:
     results = classifier(image)
     objects = [item['label'] for item in results]
     objects_str = ", ".join(objects)
-    ingredients = detection_chain.invoke({'input': objects_str})
-    ingredients = ingredients.split(', ')
-    ingredients = [clean_string(item.lower()) for item in ingredients]
-
-    if ingredients[0] == 'empty':
-        response_gen = string_to_generator("No ingredients were detected in the photo!")
-        message = st.chat_message("assistant").write_stream(response_gen)
-        msgs.add_ai_message(message)
-    else:
-        response = pantry.create_items(ingredients)
-        response_gen = string_to_generator(response)
-        message = st.chat_message("assistant").write_stream(response_gen)
-        msgs.add_ai_message(message)
+    input = f'What food ingredients are in this list: {objects_str}?'
+    detection_chain = chooser = detect_prompt | model | StrOutputParser() | strip | fixing_parser | itemgetter("arguments") | detected
+    response = detection_chain.invoke(input)
+    response_gen = string_to_generator(response)
+    message = st.chat_message("assistant").write_stream(response_gen)
+    msgs.add_ai_message(message)
 
 
 # React to user message input
