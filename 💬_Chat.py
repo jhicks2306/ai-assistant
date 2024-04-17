@@ -1,5 +1,6 @@
 import streamlit as st
 from langchain_community.chat_models import ChatOllama
+from langchain_community.llms import Ollama
 from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
 from langchain_core.tools import tool
 from langchain.tools.render import render_text_description
@@ -13,6 +14,10 @@ from dotenv import dotenv_values
 from operator import itemgetter
 import os
 from langchain.output_parsers import OutputFixingParser, RetryOutputParser
+import numpy as np
+from PIL import Image
+from transformers import pipeline, YolosImageProcessor
+import re
 
 
 env_vars = dotenv_values(".env")
@@ -32,8 +37,10 @@ if len(msgs.messages) == 0:
     msgs.add_ai_message("PantryPal: How can I help you?")
 config = {"configurable": {"session_id": "any"}}
 
-# Set up main chat model chain and pass message history.
+# Set up main chat model chain.
 model = ChatOllama(model='mistral:instruct')
+
+classifier = pipeline(task='object-detection', model="hustvl/yolos-small", image_processor=YolosImageProcessor())
 
 # Define tools for interacting with database.
 @tool
@@ -105,6 +112,14 @@ def strip(input: str) -> str:
     "Strip incorrect backslash and underscore from LLM response."
     return input.replace('\\_', '_')
 
+@tool
+def detected(ingredients: list) -> str:
+    """Provide a list of food ingredients detected in user input.
+    Arguments:
+        ingredients: e.g. ['apples', 'pasta']"""
+    response = pantry.create_items(ingredients)
+    return response
+
 tools = [add, remove, pantry_query, converse]
 
 # Configure the system prompt for the chooser LLM.
@@ -138,15 +153,61 @@ def string_to_generator(input_string):
     for char in input_string:
         yield char
 
+def clean_string(input_string):
+    # Define a regex pattern to match whitespace and punctuation
+    pattern = r'[\s\W_]+'
+    
+    # Replace the matched pattern with an empty string
+    cleaned_string = re.sub(pattern, '', input_string)
+    
+    return cleaned_string
+
+detect_model = Ollama(model='mistral:instruct')
+detect_sys_prompt = f"""You are an expert extraction algorithm. Extract food ingredients from the user input.
+return only a comma separated list of food ingredients.
+
+e.g. 'pasta, banana, rice'
+
+If there are no food ingredients in the user input, return just 'Empty'.
+"""
+
+detect_prompt = ChatPromptTemplate.from_messages(
+    [("system", detect_sys_prompt), ("user", """What food ingredients are in this list: {input}""")]
+)
+detection_chain = detect_prompt | detect_model
+
 ### The PANTRY ASSISTANT APP ###
 
 st.title("Pantry Assistant")
+
+img_file_buffer = st.sidebar.camera_input('Take a picture!')
 
 # Render the chat history.
 for msg in msgs.messages:
     st.chat_message(msg.type).write(msg.content)
 
-# React to user input
+# React to user photo input
+if img_file_buffer is not None:
+    image = Image.open(img_file_buffer)
+    results = classifier(image)
+    objects = [item['label'] for item in results]
+    objects_str = ", ".join(objects)
+    ingredients = detection_chain.invoke({'input': objects_str})
+    ingredients = ingredients.split(', ')
+    ingredients = [clean_string(item.lower()) for item in ingredients]
+
+    if ingredients[0] == 'empty':
+        response_gen = string_to_generator("No ingredients were detected in the photo!")
+        message = st.chat_message("assistant").write_stream(response_gen)
+        msgs.add_ai_message(message)
+    else:
+        response = pantry.create_items(ingredients)
+        response_gen = string_to_generator(response)
+        message = st.chat_message("assistant").write_stream(response_gen)
+        msgs.add_ai_message(message)
+
+
+# React to user message input
 if input := st.chat_input("What is up?"):
     # Display user input.
     st.chat_message("user").write(input)
